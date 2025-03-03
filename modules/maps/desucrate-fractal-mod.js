@@ -104,7 +104,7 @@ function generateMap() {
     let bHumanNearEquator = utilities.needHumanNearEquator();
 
     startSectors = chooseStartSectors(iNumPlayers1, iNumPlayers2, iStartSectorRows, iStartSectorCols, bHumanNearEquator);
-    desu.createLandmasses(iWidth, iHeight, westContinent, eastContinent, iStartSectorRows, iStartSectorCols, startSectors, fMapScale, fWaterPercentFactor);
+    desu.createLandmasses(iWidth, iHeight, westContinent, eastContinent, iStartSectorRows, iStartSectorCols, startSectors, fWaterPercentFactor);
     desu.createCloseIslands(iWidth, iHeight, westContinent, eastContinent, 4);
     utilities.createIslands(iWidth, iHeight, westContinent2, eastContinent2, 4);
     utilities.createIslands(iWidth, iHeight, westContinent2, eastContinent2, 5);
