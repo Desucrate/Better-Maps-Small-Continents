@@ -28,6 +28,11 @@ function requestMapData(initParams) {
     engine.call("SetMapInitData", initParams);
 }
 function generateMap() {
+    let naturalWonderEvent = false;
+    const liveEventDBRow = GameInfo.GlobalParameters.lookup("REGISTERED_RACE_TO_WONDERS_EVENT");
+    if (liveEventDBRow && liveEventDBRow.Value != "0") {
+        naturalWonderEvent = true;
+    }
     console.log("Generating a map!");
     console.log(`Age - ${GameInfo.Ages.lookup(Game.age).AgeType}`);
     let iWidth = GameplayMap.getGridWidth();
@@ -35,6 +40,21 @@ function generateMap() {
     let uiMapSize = GameplayMap.getMapSize();
     let startPositions = [];
     let mapInfo = GameInfo.Maps.lookup(uiMapSize);
+    let standardSize = (84 * 54);
+    let fMapScale = Math.max(((iWidth * iHeight) / standardSize) * 0.85, 1);
+    console.log("fMapScale = " + fMapScale);
+    console.log("Name = " + mapInfo.Name);
+    console.log("Type = " + mapInfo.MapSizeType);
+
+    let fWaterPercentFactor = 1.0;
+    //if (mapInfo.MapSizeType == "MAPSIZE_MASSIVE") {
+    //  fWaterPercentFactor = 1.35;
+    //}
+    if (fMapScale > 1.25) {
+        fMapScale = fMapScale - ((fMapScale - 1.25) * 0.4);
+    }
+    console.log("Adjusted fMapScale = " + fMapScale);
+
     if (mapInfo == null)
         return;
     // Establish continent boundaries
@@ -83,9 +103,8 @@ function generateMap() {
     }
     let bHumanNearEquator = utilities.needHumanNearEquator();
 
-    let fWaterPercentFactor = 1.45;
     startSectors = chooseStartSectors(iNumPlayers1, iNumPlayers2, iStartSectorRows, iStartSectorCols, bHumanNearEquator);
-    desu.createLandmasses(iWidth, iHeight, westContinent, eastContinent, iStartSectorRows, iStartSectorCols, startSectors, fWaterPercentFactor);
+    desu.createLandmasses(iWidth, iHeight, westContinent, eastContinent, iStartSectorRows, iStartSectorCols, startSectors, fMapScale, fWaterPercentFactor);
     desu.createCloseIslands(iWidth, iHeight, westContinent, eastContinent, 4);
     utilities.createIslands(iWidth, iHeight, westContinent2, eastContinent2, 4);
     utilities.createIslands(iWidth, iHeight, westContinent2, eastContinent2, 5);

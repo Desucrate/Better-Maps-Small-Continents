@@ -3,7 +3,7 @@ import * as utilities from '/base-standard/maps/map-utilities.js';
 
 export function createLandmasses(iWidth, iHeight, continent1, continent2, iStartSectorRows, iStartSectorCols, startSectors, fMapScale, fWaterPercentFactor) {
     FractalBuilder.create(globals.g_LandmassFractal, iWidth, iHeight, 3, 0);
-    let iWaterHeight = FractalBuilder.getHeightFromPercent(globals.g_LandmassFractal, globals.g_WaterPercent); //todo add fMapScale so oceans can potentially exist with fWaterPercentFactor
+    let iWaterHeight = FractalBuilder.getHeightFromPercent(globals.g_LandmassFractal, globals.g_WaterPercent * fWaterPercentFactor); //todo add fMapScale so oceans can potentially exist with fWaterPercentFactor
     console.log("iWaterHeight = " + iWaterHeight);
     console.log("continent2.west = " + continent2.west);
     let iBuffer = Math.floor(iHeight / 18.0);
