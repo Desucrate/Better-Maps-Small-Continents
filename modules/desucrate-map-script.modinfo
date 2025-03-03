@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Mod id="desucrate-map-script" version="1"
+	xmlns="ModInfo">
+	<Properties>
+		<Name>Desucrate Map Script</Name>
+		<Description>LOC_MAPSCRIPT_TEMPLATE_DESCRIPTION</Description>
+		<Authors>Gedemon</Authors>
+		<Package>MOD</Package>
+	</Properties>
+	<Dependencies>
+		<Mod id="base-standard" title="LOC_MODULE_BASE_STANDARD_NAME"/>
+	</Dependencies>
+	<ActionCriteria>
+		<Criteria id="always">
+			<AlwaysMet></AlwaysMet>
+		</Criteria>
+	</ActionCriteria>
+	<ActionGroups>
+		<ActionGroup id="base-game-main-desucrate-mapscript" scope="game" criteria="always">
+			<Actions>
+				<UpdateText>
+					<Item>text/en_us/MapText.xml</Item>
+				</UpdateText>
+				<ImportFiles>
+					<Item>maps/desucrate-map-globals.js</Item>
+					<Item>maps/desucrate-map-utilities.js</Item>
+				</ImportFiles>
+			</Actions>
+		</ActionGroup>
+		<ActionGroup id="shell-desucrate-mapscript" scope="shell" criteria="always">
+			<Actions>
+				<UpdateDatabase>
+					<Item>config/config.xml</Item>
+				</UpdateDatabase>
+				<UpdateText>
+					<Item>text/en_us/MapText.xml</Item>
+				</UpdateText>
+			</Actions>
+		</ActionGroup>
+	</ActionGroups>
+	<LocalizedText>
+		<File>text/en_us/ModuleText.xml</File>
+	</LocalizedText>
+</Mod>

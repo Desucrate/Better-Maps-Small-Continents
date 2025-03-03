@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Database>
+	<EnglishText>
+		<Row Tag="LOC_MAP_DESUCRATE_FRACTAL">
+			<Text>TODO</Text>
+		</Row>
+		<Row Tag="LOC_MAP_DESUCRATE_FRACTAL_DESCRIPTION">
+			<Text>TODO</Text>
+		</Row>
+	</EnglishText>
+</Database>

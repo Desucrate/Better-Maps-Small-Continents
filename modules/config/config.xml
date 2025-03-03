@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Database>
+	<Maps>
+		<Row File="{desucrate-map-script}maps/desucrate-fractal-mod.js" Name="LOC_MAP_MAPSCRIPT_TEMPLATE_CONTINENT_NAME" Description="LOC_MAP_MAPSCRIPT_TEMPLATE_CONTINENT_DESCRIPTION" SortIndex="9"/>
+	</Maps>
+</Database>
