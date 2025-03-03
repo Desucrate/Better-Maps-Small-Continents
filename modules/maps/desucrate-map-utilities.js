@@ -1,13 +1,16 @@
 import * as globals from '/base-standard/maps/map-globals.js';
 import * as utilities from '/base-standard/maps/map-utilities.js';
 
-export function createLandmasses(iWidth, iHeight, continent1, continent2, iStartSectorRows, iStartSectorCols, startSectors, fMapScale, fWaterPercentFactor) {
-    FractalBuilder.create(globals.g_LandmassFractal, iWidth, iHeight, 3, 0);
-    let iWaterHeight = FractalBuilder.getHeightFromPercent(globals.g_LandmassFractal, globals.g_WaterPercent * fWaterPercentFactor); //todo add fMapScale so oceans can potentially exist with fWaterPercentFactor
+export function createLandmasses(iWidth, iHeight, continent1, continent2, iStartSectorRows, iStartSectorCols, startSectors, fMapScale, fWaterPercentFactor) { 
+    FractalBuilder.create(globals.g_LandmassFractal, iWidth, iHeight, 3 /*iSize - continents use 2, fractal uses 3. smaller number makes landmass bigger.*/, 0);
+    let iWaterHeight = FractalBuilder.getHeightFromPercent(globals.g_LandmassFractal, globals.g_WaterPercent * fWaterPercentFactor);
+    //=========================================================================================================================================================
     console.log("iWaterHeight = " + iWaterHeight);
     console.log("continent2.west = " + continent2.west);
-    let iBuffer = Math.floor(iHeight / 18.0);
-    let iBuffer2 = Math.floor(iWidth / 28.0);
+    let iBuffer = Math.floor(iHeight / 13.5); //continents scripts use 18.0, fractal uses 13.5
+    console.log("iBuffer = " + iBuffer);
+    let iBuffer2 = Math.floor(iWidth / 21.0); //continents scripts use 28.0, fractal uses 21.0
+    console.log("iBuffer2 = " + iBuffer2);
     for (let iY = 0; iY < iHeight; iY++) {
         for (let iX = 0; iX < iWidth; iX++) {
             let terrain = globals.g_FlatTerrain;
@@ -30,9 +33,16 @@ export function createLandmasses(iWidth, iHeight, continent1, continent2, iStart
             if (iY < continent1.south + iRandom || iY >= continent1.north - iRandom) {
                 terrain = globals.g_OceanTerrain;
             }
+            // Of if between the continents
+            else if (iX < continent1.west + iRandom2 || iX >= continent2.east - iRandom2 ||
+                (iX >= continent1.east - iRandom2 && iX < continent2.west + iRandom2)) {
+                terrain = globals.g_OceanTerrain;
+            }
             else {
+                // Get the value from the fractal
+                let iPlotHeight = getHeightAdjustingForStartSector(iX, iY, iWaterHeight, globals.g_FractalWeight, 0.0 /*CenterWeight*/, globals.g_StartSectorWeight, continent1, continent2, iStartSectorRows, iStartSectorCols, startSectors, fMapScale);
                 // Finally see whether or not this stays as Land or has too low a score and drops back to water
-                if (iPlotHeight < iWaterHeight * globals.g_Cutoff) {
+                if (iPlotHeight < iWaterHeight * (globals.g_FractalWeight + globals.g_StartSectorWeight)) {
                     terrain = globals.g_OceanTerrain;
                 }
             }

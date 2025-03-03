@@ -18,13 +18,13 @@ import { generateSnow, dumpPermanentSnow } from '/base-standard/maps/snow-genera
 import { dumpStartSectors, dumpContinents, dumpTerrain, dumpElevation, dumpRainfall, dumpBiomes, dumpFeatures, dumpResources, dumpNoisePredicate } from '/base-standard/maps/map-debug-helpers.js';
 import * as desu from '/desucrate-map-script/maps/desucrate-map-utilities.js';
 function requestMapData(initParams) {
-    console.log(initParams.width);
-    console.log(initParams.height);
-    console.log(initParams.topLatitude);
-    console.log(initParams.bottomLatitude);
-    console.log(initParams.wrapX);
-    console.log(initParams.wrapY);
-    console.log(initParams.mapSize);
+    console.log("initParams.width = " + initParams.width);
+    console.log("initParams.height = " + initParams.height);
+    console.log("initParams.topLatitude = " + initParams.topLatitude);
+    console.log("initParams.bottomLatitude = " + initParams.bottomLatitude);
+    console.log("initParams.wrapX = " + initParams.wrapX);
+    console.log("initParams.wrapY = " + initParams.wrapY);
+    console.log("initParams.mapSize = " + initParams.mapSize);
     engine.call("SetMapInitData", initParams);
 }
 function generateMap() {
@@ -46,7 +46,7 @@ function generateMap() {
     console.log("Name = " + mapInfo.Name);
     console.log("Type = " + mapInfo.MapSizeType);
 
-    let fWaterPercentFactor = 1.0;
+    let fWaterPercentFactor = 1.45; //g_waterPercent gets multiplied by this, 1.45 by default on continents++
     //if (mapInfo.MapSizeType == "MAPSIZE_MASSIVE") {
     //  fWaterPercentFactor = 1.35;
     //}
@@ -190,7 +190,7 @@ function generateMap() {
 // Register listeners.
 engine.on('RequestMapInitData', requestMapData);
 engine.on('GenerateMap', generateMap);
-console.log("Loaded fractal.ts");
+console.log("Loaded Desucrate fractal.ts");
 function createLandmasses(iWidth, iHeight, westContinent, eastContinent, iStartSectorRows, iStartSectorCols, startSectors) {
     FractalBuilder.create(globals.g_LandmassFractal, iWidth, iHeight, 3, 0);
     let iWaterHeight = FractalBuilder.getHeightFromPercent(globals.g_LandmassFractal, globals.g_WaterPercent);
