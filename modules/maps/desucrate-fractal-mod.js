@@ -45,7 +45,7 @@ function generateMap() {
     console.log("fMapScale = " + fMapScale);
     console.log("Name = " + mapInfo.Name);
     console.log("Type = " + mapInfo.MapSizeType);
-
+    //=======================================================================================================
     let fWaterPercentFactor = 1.45; //g_waterPercent gets multiplied by this, 1.45 by default on continents++
     //if (mapInfo.MapSizeType == "MAPSIZE_MASSIVE") {
     //  fWaterPercentFactor = 1.35;
@@ -191,46 +191,6 @@ function generateMap() {
 engine.on('RequestMapInitData', requestMapData);
 engine.on('GenerateMap', generateMap);
 console.log("Loaded Desucrate fractal.ts");
-function createLandmasses(iWidth, iHeight, westContinent, eastContinent, iStartSectorRows, iStartSectorCols, startSectors) {
-    FractalBuilder.create(globals.g_LandmassFractal, iWidth, iHeight, 3, 0);
-    let iWaterHeight = FractalBuilder.getHeightFromPercent(globals.g_LandmassFractal, globals.g_WaterPercent);
-    let iBuffer = Math.floor(iHeight / 13.5);
-    let iBuffer2 = Math.floor(iWidth / 21.0);
-    for (let iY = 0; iY < iHeight; iY++) {
-        for (let iX = 0; iX < iWidth; iX++) {
-            let terrain = globals.g_FlatTerrain;
-            let iRandom = TerrainBuilder.getRandomNumber(iBuffer, "Random Top/Bottom Edges");
-            let iRandom2 = TerrainBuilder.getRandomNumber(iBuffer2, "Random Left/Right Edges");
-            // Initialize plot tag
-            TerrainBuilder.setPlotTag(iX, iY, PlotTags.PLOT_TAG_NONE);
-            //  Must be water if at the poles
-            if (iY < westContinent.south + iRandom || iY >= westContinent.north - iRandom) {
-                terrain = globals.g_OceanTerrain;
-            }
-            // Of if between the continents
-            else if (iX < westContinent.west + iRandom2 || iX >= eastContinent.east - iRandom2 ||
-                (iX >= westContinent.east - iRandom2 && iX < eastContinent.west + iRandom2)) {
-                terrain = globals.g_OceanTerrain;
-            }
-            else {
-                // Get the value from the fractal
-                let iPlotHeight = utilities.getHeightAdjustingForStartSector(iX, iY, iWaterHeight, globals.g_FractalWeight, 0.0 /*CenterWeight*/, globals.g_StartSectorWeight, westContinent, eastContinent, iStartSectorRows, iStartSectorCols, startSectors);
-                // Finally see whether or not this stays as Land or has too low a score and drops back to water
-                if (iPlotHeight < iWaterHeight * (globals.g_FractalWeight + globals.g_StartSectorWeight)) {
-                    terrain = globals.g_OceanTerrain;
-                }
-            }
-            // Add plot tag if applicable
-            if (terrain != globals.g_OceanTerrain && terrain != globals.g_CoastTerrain) {
-                utilities.addLandmassPlotTags(iX, iY, eastContinent.west);
-            }
-            else {
-                utilities.addWaterPlotTags(iX, iY, eastContinent.west);
-            }
-            TerrainBuilder.setTerrainType(iX, iY, terrain);
-        }
-    }
-}
 export function expandCoastsPlus(iWest, iEast, iHeight) {
     for (let iY = 0; iY < iHeight; iY++) {
         for (let iX = iWest; iX < iEast; iX++) {

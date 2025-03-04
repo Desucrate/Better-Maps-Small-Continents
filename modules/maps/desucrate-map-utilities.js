@@ -34,10 +34,10 @@ export function createLandmasses(iWidth, iHeight, continent1, continent2, iStart
                 terrain = globals.g_OceanTerrain;
             }
             // Of if between the continents
-            else if (iX < continent1.west + iRandom2 || iX >= continent2.east - iRandom2 ||
+            /*else if (iX < continent1.west + iRandom2 || iX >= continent2.east - iRandom2 ||
                 (iX >= continent1.east - iRandom2 && iX < continent2.west + iRandom2)) {
                 terrain = globals.g_OceanTerrain;
-            }
+            }*/
             else {
                 // Get the value from the fractal. idk why commenting this out makes it better but it does
                 //let iPlotHeight = getHeightAdjustingForStartSector(iX, iY, iWaterHeight, globals.g_FractalWeight, 0.0 /*CenterWeight*/, globals.g_StartSectorWeight, continent1, continent2, iStartSectorRows, iStartSectorCols, startSectors, fMapScale);
@@ -67,7 +67,7 @@ export function createLandmasses(iWidth, iHeight, continent1, continent2, iStart
 
 export function createCloseIslands(iWidth, iHeight, continent1, continent2, iSize) {
     FractalBuilder.create(globals.g_LandmassFractal, iWidth, iHeight, iSize, 0);
-    let iwater_percent = 50 /*Special Water Percent for Archipelago */ + iSize * 7;
+    let iwater_percent = 70 /*Special Water Percent for Archipelago */ + iSize * 7;
     let iWaterHeight = FractalBuilder.getHeightFromPercent(globals.g_LandmassFractal, iwater_percent);
     let iBuffer = Math.floor(iWidth / 24.0);
     let terrain = globals.g_FlatTerrain;
