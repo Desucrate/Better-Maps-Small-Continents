@@ -59,14 +59,14 @@ function generateMap() {
         return;
     // Establish continent boundaries
     let westContinent = {
-        west: (3 * globals.g_AvoidSeamOffset) + globals.g_IslandWidth,
+        west: (2 * globals.g_AvoidSeamOffset),// + globals.g_IslandWidth,
         east: (iWidth / 2) - globals.g_AvoidSeamOffset,
         south: globals.g_PolarWaterRows,
         north: iHeight - globals.g_PolarWaterRows,
         continent: 0
     };
     let eastContinent = {
-        west: westContinent.east + (4 * globals.g_AvoidSeamOffset) + globals.g_IslandWidth,
+        west: westContinent.east + (3 * globals.g_AvoidSeamOffset),// + globals.g_IslandWidth,
         east: iWidth - globals.g_AvoidSeamOffset,
         south: globals.g_PolarWaterRows,
         north: iHeight - globals.g_PolarWaterRows,
@@ -74,14 +74,14 @@ function generateMap() {
     };
     let westContinent2 = {
         west: globals.g_AvoidSeamOffset,
-        east: globals.g_AvoidSeamOffset + globals.g_IslandWidth,
+        east: globals.g_AvoidSeamOffset,// + globals.g_IslandWidth,
         south: globals.g_PolarWaterRows,
         north: iHeight - globals.g_PolarWaterRows,
         continent: 0
     };
     let eastContinent2 = {
         west: (iWidth / 2) + globals.g_AvoidSeamOffset,
-        east: (iWidth / 2) + globals.g_AvoidSeamOffset + globals.g_IslandWidth,
+        east: (iWidth / 2) + globals.g_AvoidSeamOffset,// + globals.g_IslandWidth,
         south: globals.g_PolarWaterRows,
         north: iHeight - globals.g_PolarWaterRows,
         continent: 0
@@ -105,10 +105,10 @@ function generateMap() {
 
     startSectors = chooseStartSectors(iNumPlayers1, iNumPlayers2, iStartSectorRows, iStartSectorCols, bHumanNearEquator);
     desu.createLandmasses(iWidth, iHeight, westContinent, eastContinent, iStartSectorRows, iStartSectorCols, startSectors, fMapScale, fWaterPercentFactor);
-    desu.createCloseIslands(iWidth, iHeight, westContinent, eastContinent, 4);
-    utilities.createIslands(iWidth, iHeight, westContinent2, eastContinent2, 4);
-    utilities.createIslands(iWidth, iHeight, westContinent2, eastContinent2, 5);
-    utilities.createIslands(iWidth, iHeight, westContinent2, eastContinent2, 6);
+    //desu.createCloseIslands(iWidth, iHeight, westContinent, eastContinent, 4);
+    //utilities.createIslands(iWidth, iHeight, westContinent2, eastContinent2, 4);
+    //utilities.createIslands(iWidth, iHeight, westContinent2, eastContinent2, 5);
+    //utilities.createIslands(iWidth, iHeight, westContinent2, eastContinent2, 6);
     TerrainBuilder.validateAndFixTerrain();
     expandCoastsPlus(westContinent.west, westContinent.east, iHeight);
     expandCoastsPlus(eastContinent.west, eastContinent.east, iHeight);

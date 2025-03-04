@@ -2,7 +2,7 @@ import * as globals from '/base-standard/maps/map-globals.js';
 import * as utilities from '/base-standard/maps/map-utilities.js';
 
 export function createLandmasses(iWidth, iHeight, continent1, continent2, iStartSectorRows, iStartSectorCols, startSectors, fMapScale, fWaterPercentFactor) { 
-    FractalBuilder.create(globals.g_LandmassFractal, iWidth, iHeight, 3 /*iSize - continents use 2, fractal uses 3. smaller number makes landmass bigger.*/, 0);
+    FractalBuilder.create(globals.g_LandmassFractal, iWidth, iHeight, 3 /*iSize - continents use 2, fractal uses 3. seems to affect noise resolution, making < 3 blobby and > 3 like a spiderweb.*/, 0);
     let iWaterHeight = FractalBuilder.getHeightFromPercent(globals.g_LandmassFractal, globals.g_WaterPercent * fWaterPercentFactor);
     //=========================================================================================================================================================
     console.log("iWaterHeight = " + iWaterHeight);
@@ -19,7 +19,7 @@ export function createLandmasses(iWidth, iHeight, continent1, continent2, iStart
             // Initialize plot tag
             TerrainBuilder.setPlotTag(iX, iY, PlotTags.PLOT_TAG_NONE);
             //console.log("iPlotHeight at ("+iX+","+iY+")");
-            let iPlotHeight = getHeightAdjustingForStartSector(iX, iY, iWaterHeight, globals.g_FractalWeight, globals.g_CenterWeight, globals.g_StartSectorWeight, continent1, continent2, iStartSectorRows, iStartSectorCols, startSectors, fMapScale);
+            let iPlotHeight = getHeightAdjustingForStartSector(iX, iY, iWaterHeight, globals.g_FractalWeight, 0.1 /*CenterWeight*/, globals.g_StartSectorWeight, continent1, continent2, iStartSectorRows, iStartSectorCols, startSectors, fMapScale);
             //console.log(" - Adjusted For Start Sector iPlotHeight = " + iPlotHeight);
             // if between the continents
             if (iX < continent1.west + iRandom2 || iX >= continent2.east - iRandom2 ||
@@ -39,8 +39,8 @@ export function createLandmasses(iWidth, iHeight, continent1, continent2, iStart
                 terrain = globals.g_OceanTerrain;
             }
             else {
-                // Get the value from the fractal
-                let iPlotHeight = getHeightAdjustingForStartSector(iX, iY, iWaterHeight, globals.g_FractalWeight, 0.0 /*CenterWeight*/, globals.g_StartSectorWeight, continent1, continent2, iStartSectorRows, iStartSectorCols, startSectors, fMapScale);
+                // Get the value from the fractal. idk why commenting this out makes it better but it does
+                //let iPlotHeight = getHeightAdjustingForStartSector(iX, iY, iWaterHeight, globals.g_FractalWeight, 0.0 /*CenterWeight*/, globals.g_StartSectorWeight, continent1, continent2, iStartSectorRows, iStartSectorCols, startSectors, fMapScale);
                 // Finally see whether or not this stays as Land or has too low a score and drops back to water
                 if (iPlotHeight < iWaterHeight * (globals.g_FractalWeight + globals.g_StartSectorWeight)) {
                     terrain = globals.g_OceanTerrain;
