@@ -6,7 +6,7 @@
 console.log("Generating using script desucrate-fractal-mod.js");
 import { assignStartPositions, chooseStartSectors } from '/base-standard/maps/assign-starting-plots.js';
 import { addMountains, addHills, buildRainfallMap, generateLakes } from '/base-standard/maps/elevation-terrain-generator.js';
-import { addFeatures, designateBiomes } from '/base-standard/maps/feature-biome-generator.js';
+import { addFeatures, designateBiomes } from '/desucrate-map-script/maps/desucrate-feature-biome-generator.js';
 import * as globals from '/base-standard/maps/map-globals.js';
 import * as utilities from '/base-standard/maps/map-utilities.js';
 import { addNaturalWonders } from '/base-standard/maps/natural-wonder-generator.js';
