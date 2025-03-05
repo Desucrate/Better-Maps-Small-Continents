@@ -6,7 +6,7 @@
 console.log("Generating using script desucrate-fractal-mod.js");
 import { assignStartPositions, chooseStartSectors } from '/base-standard/maps/assign-starting-plots.js';
 import { addMountains, addHills, buildRainfallMap, generateLakes } from '/base-standard/maps/elevation-terrain-generator.js';
-import { addFeatures, designateBiomes } from '/desucrate-map-script/maps/desucrate-feature-biome-generator.js';
+import { addFeatures, designateBiomes } from '/better-maps-small-continents/maps/desucrate-feature-biome-generator.js';
 import * as globals from '/base-standard/maps/map-globals.js';
 import * as utilities from '/base-standard/maps/map-utilities.js';
 import { addNaturalWonders } from '/base-standard/maps/natural-wonder-generator.js';
@@ -16,7 +16,7 @@ import { assignAdvancedStartRegions } from '/base-standard/maps/assign-advanced-
 import { generateDiscoveries } from '/base-standard/maps/discovery-generator.js';
 import { generateSnow, dumpPermanentSnow } from '/base-standard/maps/snow-generator.js';
 import { dumpStartSectors, dumpContinents, dumpTerrain, dumpElevation, dumpRainfall, dumpBiomes, dumpFeatures, dumpResources, dumpNoisePredicate } from '/base-standard/maps/map-debug-helpers.js';
-import * as desu from '/desucrate-map-script/maps/desucrate-map-utilities.js';
+import * as desu from '/better-maps-small-continents/maps/desucrate-map-utilities.js';
 function requestMapData(initParams) {
     console.log("initParams.width = " + initParams.width);
     console.log("initParams.height = " + initParams.height);

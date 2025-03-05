@@ -1,4 +1,4 @@
-import * as globals from '/desucrate-map-script/maps/desucrate-map-globals.js';
+import * as globals from '/better-maps-small-continents/maps/desucrate-map-globals.js';
 import * as utilities from '/base-standard/maps/map-utilities.js';
 export function designateBiomes(iWidth, iHeight) {
     console.log("Biomes");
