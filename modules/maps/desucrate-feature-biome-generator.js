@@ -4,9 +4,17 @@ export function designateBiomes(iWidth, iHeight) {
     console.log("Biomes");
     let iTotalLandPlots = 0;
     let iTotalLandPlotsAbove = 0;
+
+    //Apply a random offset to latitude, moving the equator
+    let iLatitudeOffset = Math.floor(Math.random() * 61);
+    console.log("Random Latitude Offset = " + iLatitudeOffset);
+    iLatitudeOffset = (iLatitudeOffset - 30);
+    console.log("Adjusted Latitude Offset = " + iLatitudeOffset);
+
     for (let iY = 0; iY < iHeight; iY++) {
         for (let iX = 0; iX < iWidth; iX++) {
             let latitude = GameplayMap.getPlotLatitude(iX, iY);
+            latitude += iLatitudeOffset;
             if (!GameplayMap.isWater(iX, iY)) {
                 iTotalLandPlots = iTotalLandPlots + 1;
             }
@@ -33,6 +41,7 @@ export function designateBiomes(iWidth, iHeight) {
             }
             else {
                 let latitude = GameplayMap.getPlotLatitude(iX, iY);
+                latitude += iLatitudeOffset;
                 if (latitude < 0)
                     latitude = -1 * latitude;
                 latitude += Math.round(GameplayMap.getElevation(iX, iY) / 120.0);
