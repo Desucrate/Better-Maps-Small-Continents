@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Database>
 	<EnglishText>
-		<Row Tag="LOC_MAP_DESUCRATE_FRACTAL">
-			<Text>Testing Fractal</Text>
+		<Row Tag="LOC_MAP_BETTER_MAPS_SMALL_CONTINENTS_NAME">
+			<Text>Better Maps: Small Continents</Text>
 		</Row>
-		<Row Tag="LOC_MAP_DESUCRATE_FRACTAL_DESCRIPTION">
-			<Text>a modded Fractal script</Text>
+		<Row Tag="LOC_MAP_BETTER_MAPS_SMALL_CONTINENTS_DESCRIPTION">
+			<Text>Produces highly varied small continents.</Text>
 		</Row>
 	</EnglishText>
 </Database>

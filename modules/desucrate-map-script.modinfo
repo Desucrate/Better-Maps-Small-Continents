@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Mod id="desucrate-map-script" version="1"
+<Mod id="better-maps-small-continents" version="1"
 	xmlns="ModInfo">
 	<Properties>
-		<Name>Desucrate Map Script</Name>
-		<Description>LOC_MAPSCRIPT_TEMPLATE_DESCRIPTION</Description>
-		<Authors>Gedemon</Authors>
+		<Name>Better Maps: Small Continents</Name>
+		<Description>LOC_MAP_BETTER_MAPS_SMALL_CONTINENTS_DESCRIPTION</Description>
+		<Authors>Desucrate</Authors>
 		<Package>MOD</Package>
 	</Properties>
 	<Dependencies>
@@ -16,7 +16,7 @@
 		</Criteria>
 	</ActionCriteria>
 	<ActionGroups>
-		<ActionGroup id="base-game-main-desucrate-mapscript" scope="game" criteria="always">
+		<ActionGroup id="base-game-main-better-maps-small-continents" scope="game" criteria="always">
 			<Actions>
 				<UpdateText>
 					<Item>text/en_us/MapText.xml</Item>
@@ -28,7 +28,7 @@
 				</ImportFiles>
 			</Actions>
 		</ActionGroup>
-		<ActionGroup id="shell-desucrate-mapscript" scope="shell" criteria="always">
+		<ActionGroup id="shell-better-maps-small-continents" scope="shell" criteria="always">
 			<Actions>
 				<UpdateDatabase>
 					<Item>config/config.xml</Item>
