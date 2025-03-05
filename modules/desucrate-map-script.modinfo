@@ -24,6 +24,7 @@
 				<ImportFiles>
 					<Item>maps/desucrate-map-globals.js</Item>
 					<Item>maps/desucrate-map-utilities.js</Item>
+					<Item>maps/desucrate-feature-biome-generator.js</Item>
 				</ImportFiles>
 			</Actions>
 		</ActionGroup>

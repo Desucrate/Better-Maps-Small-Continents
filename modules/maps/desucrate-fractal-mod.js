@@ -6,7 +6,7 @@
 console.log("Generating using script desucrate-fractal-mod.js");
 import { assignStartPositions, chooseStartSectors } from '/base-standard/maps/assign-starting-plots.js';
 import { addMountains, addHills, buildRainfallMap, generateLakes } from '/base-standard/maps/elevation-terrain-generator.js';
-import { addFeatures, designateBiomes } from '/base-standard/maps/feature-biome-generator.js';
+import { addFeatures, designateBiomes } from '/desucrate-map-script/maps/desucrate-feature-biome-generator.js';
 import * as globals from '/base-standard/maps/map-globals.js';
 import * as utilities from '/base-standard/maps/map-utilities.js';
 import { addNaturalWonders } from '/base-standard/maps/natural-wonder-generator.js';
@@ -18,13 +18,13 @@ import { generateSnow, dumpPermanentSnow } from '/base-standard/maps/snow-genera
 import { dumpStartSectors, dumpContinents, dumpTerrain, dumpElevation, dumpRainfall, dumpBiomes, dumpFeatures, dumpResources, dumpNoisePredicate } from '/base-standard/maps/map-debug-helpers.js';
 import * as desu from '/desucrate-map-script/maps/desucrate-map-utilities.js';
 function requestMapData(initParams) {
-    console.log(initParams.width);
-    console.log(initParams.height);
-    console.log(initParams.topLatitude);
-    console.log(initParams.bottomLatitude);
-    console.log(initParams.wrapX);
-    console.log(initParams.wrapY);
-    console.log(initParams.mapSize);
+    console.log("initParams.width = " + initParams.width);
+    console.log("initParams.height = " + initParams.height);
+    console.log("initParams.topLatitude = " + initParams.topLatitude);
+    console.log("initParams.bottomLatitude = " + initParams.bottomLatitude);
+    console.log("initParams.wrapX = " + initParams.wrapX);
+    console.log("initParams.wrapY = " + initParams.wrapY);
+    console.log("initParams.mapSize = " + initParams.mapSize);
     engine.call("SetMapInitData", initParams);
 }
 function generateMap() {
@@ -45,8 +45,8 @@ function generateMap() {
     console.log("fMapScale = " + fMapScale);
     console.log("Name = " + mapInfo.Name);
     console.log("Type = " + mapInfo.MapSizeType);
-
-    let fWaterPercentFactor = 1.0;
+    //=======================================================================================================
+    let fWaterPercentFactor = 1.45; //g_waterPercent gets multiplied by this, 1.45 by default on continents++
     //if (mapInfo.MapSizeType == "MAPSIZE_MASSIVE") {
     //  fWaterPercentFactor = 1.35;
     //}
@@ -59,14 +59,14 @@ function generateMap() {
         return;
     // Establish continent boundaries
     let westContinent = {
-        west: (3 * globals.g_AvoidSeamOffset) + globals.g_IslandWidth,
+        west: (2 * globals.g_AvoidSeamOffset),// + globals.g_IslandWidth,
         east: (iWidth / 2) - globals.g_AvoidSeamOffset,
         south: globals.g_PolarWaterRows,
         north: iHeight - globals.g_PolarWaterRows,
         continent: 0
     };
     let eastContinent = {
-        west: westContinent.east + (4 * globals.g_AvoidSeamOffset) + globals.g_IslandWidth,
+        west: westContinent.east + (3 * globals.g_AvoidSeamOffset),// + globals.g_IslandWidth,
         east: iWidth - globals.g_AvoidSeamOffset,
         south: globals.g_PolarWaterRows,
         north: iHeight - globals.g_PolarWaterRows,
@@ -74,14 +74,14 @@ function generateMap() {
     };
     let westContinent2 = {
         west: globals.g_AvoidSeamOffset,
-        east: globals.g_AvoidSeamOffset + globals.g_IslandWidth,
+        east: globals.g_AvoidSeamOffset,// + globals.g_IslandWidth,
         south: globals.g_PolarWaterRows,
         north: iHeight - globals.g_PolarWaterRows,
         continent: 0
     };
     let eastContinent2 = {
         west: (iWidth / 2) + globals.g_AvoidSeamOffset,
-        east: (iWidth / 2) + globals.g_AvoidSeamOffset + globals.g_IslandWidth,
+        east: (iWidth / 2) + globals.g_AvoidSeamOffset,// + globals.g_IslandWidth,
         south: globals.g_PolarWaterRows,
         north: iHeight - globals.g_PolarWaterRows,
         continent: 0
@@ -104,11 +104,11 @@ function generateMap() {
     let bHumanNearEquator = utilities.needHumanNearEquator();
 
     startSectors = chooseStartSectors(iNumPlayers1, iNumPlayers2, iStartSectorRows, iStartSectorCols, bHumanNearEquator);
-    desu.createLandmasses(iWidth, iHeight, westContinent, eastContinent, iStartSectorRows, iStartSectorCols, startSectors, fWaterPercentFactor);
-    desu.createCloseIslands(iWidth, iHeight, westContinent, eastContinent, 4);
-    utilities.createIslands(iWidth, iHeight, westContinent2, eastContinent2, 4);
-    utilities.createIslands(iWidth, iHeight, westContinent2, eastContinent2, 5);
-    utilities.createIslands(iWidth, iHeight, westContinent2, eastContinent2, 6);
+    desu.createLandmasses(iWidth, iHeight, westContinent, eastContinent, iStartSectorRows, iStartSectorCols, startSectors, fMapScale, fWaterPercentFactor);
+    //desu.createCloseIslands(iWidth, iHeight, westContinent, eastContinent, 4);
+    //utilities.createIslands(iWidth, iHeight, westContinent2, eastContinent2, 4);
+    //utilities.createIslands(iWidth, iHeight, westContinent2, eastContinent2, 5);
+    //utilities.createIslands(iWidth, iHeight, westContinent2, eastContinent2, 6);
     TerrainBuilder.validateAndFixTerrain();
     expandCoastsPlus(westContinent.west, westContinent.east, iHeight);
     expandCoastsPlus(eastContinent.west, eastContinent.east, iHeight);
@@ -190,47 +190,7 @@ function generateMap() {
 // Register listeners.
 engine.on('RequestMapInitData', requestMapData);
 engine.on('GenerateMap', generateMap);
-console.log("Loaded fractal.ts");
-function createLandmasses(iWidth, iHeight, westContinent, eastContinent, iStartSectorRows, iStartSectorCols, startSectors) {
-    FractalBuilder.create(globals.g_LandmassFractal, iWidth, iHeight, 3, 0);
-    let iWaterHeight = FractalBuilder.getHeightFromPercent(globals.g_LandmassFractal, globals.g_WaterPercent);
-    let iBuffer = Math.floor(iHeight / 13.5);
-    let iBuffer2 = Math.floor(iWidth / 21.0);
-    for (let iY = 0; iY < iHeight; iY++) {
-        for (let iX = 0; iX < iWidth; iX++) {
-            let terrain = globals.g_FlatTerrain;
-            let iRandom = TerrainBuilder.getRandomNumber(iBuffer, "Random Top/Bottom Edges");
-            let iRandom2 = TerrainBuilder.getRandomNumber(iBuffer2, "Random Left/Right Edges");
-            // Initialize plot tag
-            TerrainBuilder.setPlotTag(iX, iY, PlotTags.PLOT_TAG_NONE);
-            //  Must be water if at the poles
-            if (iY < westContinent.south + iRandom || iY >= westContinent.north - iRandom) {
-                terrain = globals.g_OceanTerrain;
-            }
-            // Of if between the continents
-            else if (iX < westContinent.west + iRandom2 || iX >= eastContinent.east - iRandom2 ||
-                (iX >= westContinent.east - iRandom2 && iX < eastContinent.west + iRandom2)) {
-                terrain = globals.g_OceanTerrain;
-            }
-            else {
-                // Get the value from the fractal
-                let iPlotHeight = utilities.getHeightAdjustingForStartSector(iX, iY, iWaterHeight, globals.g_FractalWeight, 0.0 /*CenterWeight*/, globals.g_StartSectorWeight, westContinent, eastContinent, iStartSectorRows, iStartSectorCols, startSectors);
-                // Finally see whether or not this stays as Land or has too low a score and drops back to water
-                if (iPlotHeight < iWaterHeight * (globals.g_FractalWeight + globals.g_StartSectorWeight)) {
-                    terrain = globals.g_OceanTerrain;
-                }
-            }
-            // Add plot tag if applicable
-            if (terrain != globals.g_OceanTerrain && terrain != globals.g_CoastTerrain) {
-                utilities.addLandmassPlotTags(iX, iY, eastContinent.west);
-            }
-            else {
-                utilities.addWaterPlotTags(iX, iY, eastContinent.west);
-            }
-            TerrainBuilder.setTerrainType(iX, iY, terrain);
-        }
-    }
-}
+console.log("Loaded Desucrate fractal.ts");
 export function expandCoastsPlus(iWest, iEast, iHeight) {
     for (let iY = 0; iY < iHeight; iY++) {
         for (let iX = iWest; iX < iEast; iX++) {

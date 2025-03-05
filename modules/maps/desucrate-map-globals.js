@@ -12,22 +12,25 @@ export var g_DesertBiome = GameInfo.Biomes.find(t => t.BiomeType == 'BIOME_DESER
 export var g_MarineBiome = GameInfo.Biomes.find(t => t.BiomeType == 'BIOME_MARINE').$index;
 export var g_VolcanoFeature = GameInfo.Features.find(t => t.FeatureType == 'FEATURE_VOLCANO').$index;
 var temp;
-export var g_GrasslandLatitude = 0;
-export var g_PlainsLatitude = 0;
-export var g_DesertLatitude = 0;
-export var g_TropicalLatitude = 0;
+export var g_GrasslandLatitude = 5; //58 by default when 0
+export var g_PlainsLatitude = 8;    //33 by default when 0
+export var g_DesertLatitude = -11;    //44 by default when 0
+export var g_TropicalLatitude = -5;  //17 by default when 0
+
+export var g_DesertMinLatitude = 18; //force desert too close to tropical to become plains - ideally 1-2 tiles
+
 temp = GameInfo.Biomes.find(t => t.BiomeType == 'BIOME_GRASSLAND').MaxLatitude;
 if (temp)
-    g_GrasslandLatitude = temp;
+    g_GrasslandLatitude += temp;
 temp = GameInfo.Biomes.find(t => t.BiomeType == 'BIOME_PLAINS').MaxLatitude;
 if (temp)
-    g_PlainsLatitude = temp;
+    g_PlainsLatitude += temp;
 temp = GameInfo.Biomes.find(t => t.BiomeType == 'BIOME_DESERT').MaxLatitude;
 if (temp)
-    g_DesertLatitude = temp;
+    g_DesertLatitude += temp;
 temp = GameInfo.Biomes.find(t => t.BiomeType == 'BIOME_TROPICAL').MaxLatitude;
 if (temp)
-    g_TropicalLatitude = temp;
+    g_TropicalLatitude += temp;
 // Global map parameters
 export var g_LandmassFractal = 0;
 export var g_MountainFractal = 1;
