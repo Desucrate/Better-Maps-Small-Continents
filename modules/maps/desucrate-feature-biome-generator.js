@@ -1,4 +1,4 @@
-import * as globals from '/base-standard/maps/map-globals.js';
+import * as globals from '/desucrate-map-script/maps/desucrate-map-globals.js';
 import * as utilities from '/base-standard/maps/map-utilities.js';
 export function designateBiomes(iWidth, iHeight) {
     console.log("Biomes");
@@ -49,11 +49,15 @@ export function designateBiomes(iWidth, iHeight) {
                 else if (latitude < globals.g_TropicalLatitude - iTropicalLowering) {
                     TerrainBuilder.setBiomeType(iX, iY, globals.g_TropicalBiome);
                 }
+                else if (latitude < globals.g_DesertLatitude - iDesertLowering || (latitude < globals.g_PlainsLatitude - iPlainsLowering && rainfall < 85)) {
+                    //force desert to plains if too close to tropical. this is probably inefficient
+                    if (latitude < globals.g_DesertMinLatitude - iDesertLowering) {
+                        TerrainBuilder.setBiomeType(iX, iY, globals.g_PlainsBiome);
+                    }
+                    else TerrainBuilder.setBiomeType(iX, iY, globals.g_DesertBiome);
+                }
                 else if (latitude < globals.g_PlainsLatitude - iPlainsLowering || (latitude < globals.g_TropicalLatitude - iTropicalLowering && rainfall < 85)) {
                     TerrainBuilder.setBiomeType(iX, iY, globals.g_PlainsBiome);
-                }
-                else if (latitude < globals.g_DesertLatitude - iDesertLowering || (latitude < globals.g_PlainsLatitude - iPlainsLowering && rainfall < 85)) {
-                    TerrainBuilder.setBiomeType(iX, iY, globals.g_DesertBiome);
                 }
                 else if (latitude < globals.g_GrasslandLatitude - iGrassLowering) {
                     TerrainBuilder.setBiomeType(iX, iY, globals.g_GrasslandBiome);
