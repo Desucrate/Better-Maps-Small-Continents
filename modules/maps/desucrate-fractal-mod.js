@@ -178,6 +178,7 @@ function generateMap() {
     dumpResources(iWidth, iHeight);
     FertilityBuilder.recalculate(); // Must be after features are added.
     let seed = GameplayMap.getRandomSeed(); // can use any seed you want for different noises
+    console.log("Seed: " + seed);
     let avgDistanceBetweenPoints = 3;
     let normalizedRangeSmoothing = 2;
     let poisson = TerrainBuilder.generatePoissonMap(seed, avgDistanceBetweenPoints, normalizedRangeSmoothing);
