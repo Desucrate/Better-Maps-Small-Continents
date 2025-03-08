@@ -190,7 +190,7 @@ function generateMap() {
 // Register listeners.
 engine.on('RequestMapInitData', requestMapData);
 engine.on('GenerateMap', generateMap);
-console.log("Loaded Desucrate fractal.ts");
+console.log("Loaded desucrate-fractal-mod.js");
 export function expandCoastsPlus(iWest, iEast, iHeight) {
     for (let iY = 0; iY < iHeight; iY++) {
         for (let iX = iWest; iX < iEast; iX++) {
