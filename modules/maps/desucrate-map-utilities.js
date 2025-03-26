@@ -19,7 +19,7 @@ export function createLandmasses(iWidth, iHeight, continent1, continent2, iStart
             // Initialize plot tag
             TerrainBuilder.setPlotTag(iX, iY, PlotTags.PLOT_TAG_NONE);
             //console.log("iPlotHeight at ("+iX+","+iY+")");
-            let iPlotHeight = getHeightAdjustingForStartSector(iX, iY, iWaterHeight, globals.g_FractalWeight, 0.1 /*CenterWeight*/, globals.g_StartSectorWeight, continent1, continent2, iStartSectorRows, iStartSectorCols, startSectors, fMapScale);
+            let iPlotHeight = getHeightAdjustingForStartSector(iX, iY, iWaterHeight, globals.g_FractalWeight, 0.2 /*CenterWeight*/, globals.g_StartSectorWeight, continent1, continent2, iStartSectorRows, iStartSectorCols, startSectors, fMapScale);
             //console.log(" - Adjusted For Start Sector iPlotHeight = " + iPlotHeight);
             // if between the continents
             if (iX < continent1.west + iRandom2 || iX >= continent2.east - iRandom2 ||
