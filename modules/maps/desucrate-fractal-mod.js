@@ -1,8 +1,16 @@
-// Fractal.ts
+// desucrate-fractal-mod.js
 /**
- * Base game map script - Produces widely varied continents.
+ * Modified Base game map script - Produces widely varied small continents.
  * @packageDocumentation
  */
+
+
+/*          - Better Maps: Small Continents -
+ *
+ *          Most code in this file is by Firaxis.
+ *  Any modified code should be marked as from Better Maps with a *BM*
+ */
+
 console.log("Generating using script desucrate-fractal-mod.js");
 import { assignStartPositions, chooseStartSectors } from '/base-standard/maps/assign-starting-plots.js';
 import { addMountains, addHills, buildRainfallMap, generateLakes } from '/base-standard/maps/elevation-terrain-generator.js';
@@ -16,8 +24,11 @@ import { assignAdvancedStartRegions } from '/base-standard/maps/assign-advanced-
 import { generateDiscoveries } from '/base-standard/maps/discovery-generator.js';
 import { generateSnow, dumpPermanentSnow } from '/base-standard/maps/snow-generator.js';
 import { dumpStartSectors, dumpContinents, dumpTerrain, dumpElevation, dumpRainfall, dumpBiomes, dumpFeatures, dumpResources, dumpNoisePredicate } from '/base-standard/maps/map-debug-helpers.js';
-import * as desu from '/better-maps-small-continents/maps/desucrate-map-utilities.js';
-function requestMapData(initParams) {
+
+// *BM import
+import * as betterMaps from '/better-maps-small-continents/maps/desucrate-map-utilities.js';
+function requestMapData(initParams) { 
+    // *BM* add strings to log var names 
     console.log("initParams.width = " + initParams.width);
     console.log("initParams.height = " + initParams.height);
     console.log("initParams.topLatitude = " + initParams.topLatitude);
@@ -104,8 +115,8 @@ function generateMap() {
     let bHumanNearEquator = utilities.needHumanNearEquator();
 
     startSectors = chooseStartSectors(iNumPlayers1, iNumPlayers2, iStartSectorRows, iStartSectorCols, bHumanNearEquator);
-    desu.createLandmasses(iWidth, iHeight, westContinent, eastContinent, iStartSectorRows, iStartSectorCols, startSectors, fMapScale, fWaterPercentFactor);
-    //desu.createCloseIslands(iWidth, iHeight, westContinent, eastContinent, 4);
+    betterMaps.createLandmasses(iWidth, iHeight, westContinent, eastContinent, iStartSectorRows, iStartSectorCols, startSectors, fMapScale, fWaterPercentFactor);
+    //betterMaps.createCloseIslands(iWidth, iHeight, westContinent, eastContinent, 4);
     //utilities.createIslands(iWidth, iHeight, westContinent2, eastContinent2, 4);
     //utilities.createIslands(iWidth, iHeight, westContinent2, eastContinent2, 5);
     //utilities.createIslands(iWidth, iHeight, westContinent2, eastContinent2, 6);
