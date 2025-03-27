@@ -14,7 +14,8 @@
 console.log("Generating using script desucrate-fractal-mod.js");
 import { assignStartPositions, chooseStartSectors } from '/base-standard/maps/assign-starting-plots.js';
 import { addMountains, addHills, buildRainfallMap, generateLakes } from '/base-standard/maps/elevation-terrain-generator.js';
-import { addFeatures, designateBiomes } from '/better-maps-small-continents/maps/desucrate-feature-biome-generator.js';
+// *BM* disable vanilla import
+//import { addFeatures, designateBiomes } from '/base-standard/maps/feature-biome-generator.js';
 import * as globals from '/base-standard/maps/map-globals.js';
 import * as utilities from '/base-standard/maps/map-utilities.js';
 import { addNaturalWonders } from '/base-standard/maps/natural-wonder-generator.js';
@@ -25,8 +26,9 @@ import { generateDiscoveries } from '/base-standard/maps/discovery-generator.js'
 import { generateSnow, dumpPermanentSnow } from '/base-standard/maps/snow-generator.js';
 import { dumpStartSectors, dumpContinents, dumpTerrain, dumpElevation, dumpRainfall, dumpBiomes, dumpFeatures, dumpResources, dumpNoisePredicate } from '/base-standard/maps/map-debug-helpers.js';
 
-// *BM import
+// *BM* imports
 import * as betterMaps from '/better-maps-small-continents/maps/desucrate-map-utilities.js';
+import { addFeatures, designateBiomes } from '/better-maps-small-continents/maps/desucrate-feature-biome-generator.js';
 function requestMapData(initParams) { 
     // *BM* add strings to log var names 
     console.log("initParams.width = " + initParams.width);
@@ -51,6 +53,8 @@ function generateMap() {
     let uiMapSize = GameplayMap.getMapSize();
     let startPositions = [];
     let mapInfo = GameInfo.Maps.lookup(uiMapSize);
+
+    // *BM*
     let standardSize = (84 * 54);
     let fMapScale = Math.max(((iWidth * iHeight) / standardSize) * 0.85, 1);
     console.log("fMapScale = " + fMapScale);
@@ -65,9 +69,15 @@ function generateMap() {
         fMapScale = fMapScale - ((fMapScale - 1.25) * 0.4);
     }
     console.log("Adjusted fMapScale = " + fMapScale);
+    // end *BM*
 
     if (mapInfo == null)
         return;
+    let iNumNaturalWonders = mapInfo.NumNaturalWonders;
+    let iTilesPerLake = mapInfo.LakeGenerationFrequency;
+    let iNumPlayers1 = mapInfo.PlayersLandmass1;
+    let iNumPlayers2 = mapInfo.PlayersLandmass2;
+
     // Establish continent boundaries
     let westContinent = {
         west: (2 * globals.g_AvoidSeamOffset),// + globals.g_IslandWidth,
@@ -97,36 +107,86 @@ function generateMap() {
         north: iHeight - globals.g_PolarWaterRows,
         continent: 0
     };
-    let startSectors;
-    let iNumPlayers1 = mapInfo.PlayersLandmass1;
-    let iNumPlayers2 = mapInfo.PlayersLandmass2;
-    let iNumNaturalWonders = mapInfo.NumNaturalWonders;
-    let iTilesPerLake = mapInfo.LakeGenerationFrequency;
-    let iStartSectorRows = mapInfo.StartSectorRows;
-    let iStartSectorCols = mapInfo.StartSectorCols;
-    let iRandom = TerrainBuilder.getRandomNumber(2, "East or West");
-    console.log("Random Hemisphere: " + iRandom);
-    if (iRandom == 1) {
-        let iNum1 = iNumPlayers1;
-        let iNum2 = iNumPlayers2;
-        iNumPlayers1 = iNum2;
-        iNumPlayers2 = iNum1;
-    }
-    let bHumanNearEquator = utilities.needHumanNearEquator();
 
-    startSectors = chooseStartSectors(iNumPlayers1, iNumPlayers2, iStartSectorRows, iStartSectorCols, bHumanNearEquator);
-    betterMaps.createLandmasses(iWidth, iHeight, westContinent, eastContinent, iStartSectorRows, iStartSectorCols, startSectors, fMapScale, fWaterPercentFactor);
-    //betterMaps.createCloseIslands(iWidth, iHeight, westContinent, eastContinent, 4);
-    //utilities.createIslands(iWidth, iHeight, westContinent2, eastContinent2, 4);
-    //utilities.createIslands(iWidth, iHeight, westContinent2, eastContinent2, 5);
-    //utilities.createIslands(iWidth, iHeight, westContinent2, eastContinent2, 6);
+    let startSectors = [];
+    let iStartSectorRows = 0;
+    let iStartSectorCols = 0;
+    let startPosition = Configuration.getMapValue("StartPosition");
+
+    if (startPosition == null) {
+        startPosition = Database.makeHash('START_POSITION_STANDARD');
+    }
+    startPosition = Number(BigInt.asIntN(32, BigInt(startPosition))); // Convert to signed int32.
+    let startPositionHash = Database.makeHash("START_POSITION_BALANCED");
+    let bIsBalanced = (startPosition == startPositionHash);
+
+    // *BM* vanilla functions, uses Start Position setting to generate a Balanced or Standard map
+    // *BM* Balanced Map:
+
+    if (bIsBalanced) {
+        console.log("Balanced Map");
+        let iRandom = TerrainBuilder.getRandomNumber(2, "East or West");
+        console.log("Random Hemisphere: " + iRandom);
+        if (iRandom == 1) {
+            let iNum1 = iNumPlayers1;
+            let iNum2 = iNumPlayers2;
+            iNumPlayers1 = iNum2;
+            iNumPlayers2 = iNum1;
+        }
+        let bHumanNearEquator = utilities.needHumanNearEquator();
+        iStartSectorRows = mapInfo.StartSectorRows;
+        iStartSectorCols = mapInfo.StartSectorCols;
+        startSectors = chooseStartSectors(iNumPlayers1, iNumPlayers2, iStartSectorRows, iStartSectorCols, bHumanNearEquator);
+        dumpStartSectors(startSectors);
+        // *BM* use BM createLandmasses function over vanilla
+        betterMaps.createLandmasses(iWidth, iHeight, westContinent, eastContinent, iStartSectorRows, iStartSectorCols, startSectors, fMapScale, fWaterPercentFactor);
+        utilities.addPlotTags(iHeight, iWidth, eastContinent.west);
+        // *BM* use Gedemon's Continents++ createCloseIslands function to generate varied islands
+        //betterMaps.createCloseIslands(iWidth, iHeight, westContinent, eastContinent, 4);
+        // *BM* disable standard island functions?
+        //utilities.createIslands(iWidth, iHeight, westContinent2, eastContinent2, 4);
+        //utilities.createIslands(iWidth, iHeight, westContinent2, eastContinent2, 6);
+        //utilities.createIslands(iWidth, iHeight, westContinent2, eastContinent2, 6);
+    }
+
+    // *BM* Standard Map:
+
+    else {
+        console.log("Standard Map");
+        let iFractalGrain = 3;
+        let iWaterPercent = globals.g_WaterPercent * globals.g_Cutoff;
+        let iLargestContinentPercent = 12;
+        // *BM* use BM createOrganicLandmasses function over vanilla
+        betterMaps.createOrganicLandmasses(iWidth, iHeight, westContinent, eastContinent, iFractalGrain, iWaterPercent, iLargestContinentPercent);
+        utilities.addPlotTags(iHeight, iWidth, eastContinent.west);
+        // Is biggest area in west or east?
+        let iAreaID = AreaBuilder.findBiggestArea(false);
+        let kBoundaries = AreaBuilder.getAreaBoundary(iAreaID);
+        console.log("BIGGEST AREA");
+        console.log("  West: " + kBoundaries.west);
+        console.log("  East: " + kBoundaries.east);
+        console.log("  South: " + kBoundaries.south);
+        console.log("  North: " + kBoundaries.north);
+        if (kBoundaries.west > (iWidth / 2)) {
+            let iNum1 = iNumPlayers1;
+            let iNum2 = iNumPlayers2;
+            iNumPlayers1 = iNum2;
+            iNumPlayers2 = iNum1;
+        }
+        // *BM* use Gedemon's Continents++ createCloseIslands function to generate varied islands
+        //betterMaps.createCloseIslands(iWidth, iHeight, westContinent, eastContinent, 4);
+        // *BM* disable standard island functions
+        //utilities.createIslands(iWidth, iHeight, westContinent2, eastContinent2, 4);
+        //utilities.createIslands(iWidth, iHeight, westContinent2, eastContinent2, 6);
+        //utilities.createIslands(iWidth, iHeight, westContinent2, eastContinent2, 6);
+    }
+
     TerrainBuilder.validateAndFixTerrain();
     expandCoastsPlus(westContinent.west, westContinent.east, iHeight);
     expandCoastsPlus(eastContinent.west, eastContinent.east, iHeight);
     expandCoastsPlus(0, westContinent.west - globals.g_OceanWaterColumns, iHeight);
     expandCoastsPlus(westContinent.east + globals.g_OceanWaterColumns, eastContinent.west - globals.g_OceanWaterColumns, iHeight);
     expandCoastsPlus(eastContinent.east + globals.g_OceanWaterColumns, 0, iHeight);
-    utilities.adjustOceanPlotTags(iNumPlayers1 > iNumPlayers2);
     AreaBuilder.recalculateAreas();
     TerrainBuilder.stampContinents();
     addMountains(iWidth, iHeight);
@@ -144,6 +204,7 @@ function generateMap() {
     TerrainBuilder.addFloodplains(4, 10);
     addFeatures(iWidth, iHeight);
     TerrainBuilder.validateAndFixTerrain();
+    utilities.adjustOceanPlotTags(iNumPlayers1 > iNumPlayers2);
     for (let iY = 0; iY < iHeight; iY++) {
         for (let iX = 0; iX < iWidth; iX++) {
             let terrain = GameplayMap.getTerrainType(iX, iY);
@@ -175,7 +236,6 @@ function generateMap() {
     AreaBuilder.recalculateAreas();
     TerrainBuilder.storeWaterData();
     generateSnow(iWidth, iHeight);
-    dumpStartSectors(startSectors);
     dumpContinents(iWidth, iHeight);
     dumpTerrain(iWidth, iHeight);
     dumpElevation(iWidth, iHeight);
@@ -189,6 +249,7 @@ function generateMap() {
     dumpResources(iWidth, iHeight);
     FertilityBuilder.recalculate(); // Must be after features are added.
     let seed = GameplayMap.getRandomSeed(); // can use any seed you want for different noises
+    // *BM* log seed
     console.log("Seed: " + seed);
     let avgDistanceBetweenPoints = 3;
     let normalizedRangeSmoothing = 2;
@@ -203,6 +264,8 @@ function generateMap() {
 engine.on('RequestMapInitData', requestMapData);
 engine.on('GenerateMap', generateMap);
 console.log("Loaded desucrate-fractal-mod.js");
+// *BM* vanilla generateLandmasses function is here, BM removes it and uses the modified version from
+// /better-maps-small-continents/maps/desucrate-map-utilities.js
 export function expandCoastsPlus(iWest, iEast, iHeight) {
     for (let iY = 0; iY < iHeight; iY++) {
         for (let iX = iWest; iX < iEast; iX++) {

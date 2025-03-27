@@ -16,10 +16,10 @@ export function createLandmasses(iWidth, iHeight, continent1, continent2, iStart
             let terrain = globals.g_FlatTerrain;
             let iRandom = TerrainBuilder.getRandomNumber(iBuffer, "Random Top/Bottom Edges");
             let iRandom2 = TerrainBuilder.getRandomNumber(iBuffer2, "Random Left/Right Edges");
-            // Initialize plot tag
-            TerrainBuilder.setPlotTag(iX, iY, PlotTags.PLOT_TAG_NONE);
+
+            // *BM*
             //console.log("iPlotHeight at ("+iX+","+iY+")");
-            let iPlotHeight = getHeightAdjustingForStartSector(iX, iY, iWaterHeight, globals.g_FractalWeight, 0.2 /*CenterWeight*/, globals.g_StartSectorWeight, continent1, continent2, iStartSectorRows, iStartSectorCols, startSectors, fMapScale);
+            let iPlotHeight = getHeightAdjustingForStartSector(iX, iY, iWaterHeight, globals.g_FractalWeight, 0.2 /* *BM* modify CenterWeight, vanilla is 0.0*/, globals.g_StartSectorWeight, continent1, continent2, iStartSectorRows, iStartSectorCols, startSectors, fMapScale);
             //console.log(" - Adjusted For Start Sector iPlotHeight = " + iPlotHeight);
             // if between the continents
             if (iX < continent1.west + iRandom2 || iX >= continent2.east - iRandom2 ||
@@ -27,47 +27,35 @@ export function createLandmasses(iWidth, iHeight, continent1, continent2, iStart
                 iPlotHeight = Math.floor(iPlotHeight * 0.5);
                 //console.log("   - Adjusted between continents iPlotHeight = " + iPlotHeight);
             }
-
             //console.log(" - Final iPlotHeight = " + iPlotHeight + "/" + iWaterHeight + " * " +  globals.g_Cutoff);
+            // end *BM*
             //  Must be water if at the poles
             if (iY < continent1.south + iRandom || iY >= continent1.north - iRandom) {
                 terrain = globals.g_OceanTerrain;
             }
             // Of if between the continents
             /*else if (iX < continent1.west + iRandom2 || iX >= continent2.east - iRandom2 ||
+
                 (iX >= continent1.east - iRandom2 && iX < continent2.west + iRandom2)) {
                 terrain = globals.g_OceanTerrain;
             }*/
             else {
-                // Get the value from the fractal. idk why commenting this out makes it better but it does
+                // Get the value from the fractal
+                // *BM* i don't remember why commenting this out makes it better. probably duping the process if it's on
                 //let iPlotHeight = getHeightAdjustingForStartSector(iX, iY, iWaterHeight, globals.g_FractalWeight, 0.0 /*CenterWeight*/, globals.g_StartSectorWeight, continent1, continent2, iStartSectorRows, iStartSectorCols, startSectors, fMapScale);
                 // Finally see whether or not this stays as Land or has too low a score and drops back to water
                 if (iPlotHeight < iWaterHeight * (globals.g_FractalWeight + globals.g_StartSectorWeight)) {
                     terrain = globals.g_OceanTerrain;
                 }
             }
-            // Add plot tag if applicable
-            if (terrain != globals.g_OceanTerrain && terrain != globals.g_CoastTerrain) {
-                //console.log("   - addLandmassPlotTags");
-                utilities.addLandmassPlotTags(iX, iY, continent2.west);
-            }
-            else {
-                utilities.addWaterPlotTags(iX, iY, continent2.west);
-            }
             TerrainBuilder.setTerrainType(iX, iY, terrain);
-            if (GameplayMap.hasPlotTag(iX, iY, PlotTags.PLOT_TAG_EAST_LANDMASS)) {
-                //console.log("   - PLOT_TAG_EAST_LANDMASS");
-            }
-            if (GameplayMap.hasPlotTag(iX, iY, PlotTags.PLOT_TAG_WEST_LANDMASS)) {
-                //console.log("   - PLOT_TAG_WEST_LANDMASS");
-            }
         }
     }
 }
 
 export function createCloseIslands(iWidth, iHeight, continent1, continent2, iSize) {
     FractalBuilder.create(globals.g_LandmassFractal, iWidth, iHeight, iSize, 0);
-    let iwater_percent = 70 /*Special Water Percent for Archipelago */ + iSize * 7;
+    let iwater_percent = 50 /*Special Water Percent for Archipelago */ + iSize * 7;
     let iWaterHeight = FractalBuilder.getHeightFromPercent(globals.g_LandmassFractal, iwater_percent);
     let iBuffer = Math.floor(iWidth / 24.0);
     let terrain = globals.g_FlatTerrain;
