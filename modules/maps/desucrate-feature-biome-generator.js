@@ -8,7 +8,7 @@ export function designateBiomes(iWidth, iHeight) {
     //Apply a random offset to latitude, moving the equator
     let iLatitudeOffset = TerrainBuilder.getRandomNumber(60, "Latitude Offset");
     //console.log("Random Latitude Offset = " + iLatitudeOffset);
-    iLatitudeOffset = (iLatitudeOffset - 30);
+    iLatitudeOffset -= 30;
     console.log("Adjusted Latitude Offset = " + iLatitudeOffset);
 
     for (let iY = 0; iY < iHeight; iY++) {

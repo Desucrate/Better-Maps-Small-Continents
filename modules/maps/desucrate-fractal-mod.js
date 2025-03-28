@@ -14,9 +14,9 @@
 console.log("Generating using script desucrate-fractal-mod.js");
 import { assignStartPositions, chooseStartSectors } from '/base-standard/maps/assign-starting-plots.js';
 import { addMountains, addHills, buildRainfallMap, generateLakes } from '/base-standard/maps/elevation-terrain-generator.js';
-// *BM* disable vanilla import
+// *BM* disable vanilla imports
 //import { addFeatures, designateBiomes } from '/base-standard/maps/feature-biome-generator.js';
-import * as globals from '/base-standard/maps/map-globals.js';
+//import * as globals from '/base-standard/maps/map-globals.js';
 import * as utilities from '/base-standard/maps/map-utilities.js';
 import { addNaturalWonders } from '/base-standard/maps/natural-wonder-generator.js';
 import { generateResources } from '/base-standard/maps/resource-generator.js';
@@ -29,6 +29,7 @@ import { dumpStartSectors, dumpContinents, dumpTerrain, dumpElevation, dumpRainf
 // *BM* imports
 import * as betterMaps from '/better-maps-small-continents/maps/desucrate-map-utilities.js';
 import { addFeatures, designateBiomes } from '/better-maps-small-continents/maps/desucrate-feature-biome-generator.js';
+import * as globals from '/better-maps-small-continents/maps/desucrate-map-globals.js';
 function requestMapData(initParams) { 
     // *BM* add strings to log var names 
     console.log("initParams.width = " + initParams.width);
@@ -157,7 +158,7 @@ function generateMap() {
         let iWaterPercent = globals.g_WaterPercent * globals.g_Cutoff;
         let iLargestContinentPercent = 12;
         // *BM* use BM createOrganicLandmasses function over vanilla
-        betterMaps.createOrganicLandmasses(iWidth, iHeight, westContinent, eastContinent, iFractalGrain, iWaterPercent, iLargestContinentPercent);
+        betterMaps.createOrganicLandmasses(iWidth, iHeight, westContinent, eastContinent, iFractalGrain, iWaterPercent, iLargestContinentPercent, fWaterPercentFactor);
         utilities.addPlotTags(iHeight, iWidth, eastContinent.west);
         // Is biggest area in west or east?
         let iAreaID = AreaBuilder.findBiggestArea(false);

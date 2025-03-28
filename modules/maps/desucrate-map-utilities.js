@@ -1,8 +1,8 @@
-import * as globals from '/base-standard/maps/map-globals.js';
+import * as globals from '/better-maps-small-continents/maps/desucrate-map-globals.js';
 import * as utilities from '/base-standard/maps/map-utilities.js';
 
 export function createLandmasses(iWidth, iHeight, continent1, continent2, iStartSectorRows, iStartSectorCols, startSectors, fMapScale, fWaterPercentFactor) { 
-    FractalBuilder.create(globals.g_LandmassFractal, iWidth, iHeight, 3 /*iSize - continents use 2, fractal uses 3. seems to affect noise resolution, making < 3 blobby and > 3 like a spiderweb.*/, 0);
+    FractalBuilder.create(globals.g_LandmassFractal, iWidth, iHeight, 3 /*iFractalGrain - continents use 2, fractal uses 3. seems to affect noise resolution, making < 3 blobby and > 3 like a spiderweb.*/, 0);
     let iWaterHeight = FractalBuilder.getHeightFromPercent(globals.g_LandmassFractal, globals.g_WaterPercent * fWaterPercentFactor);
     //=========================================================================================================================================================
     console.log("iWaterHeight = " + iWaterHeight);
@@ -116,7 +116,91 @@ function getHeightAdjustingForStartSector(iX, iY, iWaterHeight, iFractalWeight, 
     //*/
     return iPlotHeight;
 }
-
+export function createOrganicLandmasses(iWidth, iHeight, continent1, continent2, iFractalGrain, iWaterPercent, iLargestContinentPercent, fWaterPercentFactor) {
+    let bLargeEnoughFound = false;
+    while (!bLargeEnoughFound) {
+        let iFlags = 0;
+        iFlags = 1; // FRAC_WRAP_X
+        iFlags += 2; // FRAC_WRAP_Y
+        FractalBuilder.create(globals.g_LandmassFractal, iWidth, iHeight, iFractalGrain, iFlags);
+        let iWaterHeight = FractalBuilder.getHeightFromPercent(globals.g_LandmassFractal, iWaterPercent * 1.25);//fWaterPercentFactor);
+        console.log("iWaterHeight = " + iWaterHeight);
+        console.log("continent2.west = " + continent2.west);
+        // Apply the fractal as is
+        for (let iY = 0; iY < iHeight; iY++) {
+            for (let iX = 0; iX < iWidth; iX++) {
+                let terrain = globals.g_OceanTerrain;
+                let iPlotHeight = FractalBuilder.getHeight(globals.g_LandmassFractal, iX, iY);
+                if (iPlotHeight >= iWaterHeight) {
+                    terrain = globals.g_FlatTerrain;
+                }
+                TerrainBuilder.setTerrainType(iX, iY, terrain);
+            }
+        }
+        // Shift it vertically and horizontally so the most water-filled rows & columns are where
+        // we want them
+        utilities.shiftTerrain(iWidth, iHeight);
+        // Add the gutters at the top of the map and along the world wrap
+        let iTilesChoppedInGutter = 0;
+        for (let iY = 0; iY < iHeight; iY++) {
+            for (let iX = 0; iX < iWidth; iX++) {
+                if (GameplayMap.getTerrainType(iX, iY) != globals.g_OceanTerrain) {
+                    // Top and bottom
+                    if (iY < continent1.south || iY > continent1.north) {
+                        TerrainBuilder.setTerrainType(iX, iY, globals.g_OceanTerrain);
+                    }
+                    // Random feathering
+                    else if (iY == continent1.south || iY == continent1.north) {
+                        if (TerrainBuilder.getRandomNumber(2, "Feather hard edges") == 0) {
+                            TerrainBuilder.setTerrainType(iX, iY, globals.g_OceanTerrain);
+                        }
+                    }
+                    // Now gutter along world wrap
+                    if (iX < continent1.west || iX > (continent2.east - 1)) {
+                        TerrainBuilder.setTerrainType(iX, iY, globals.g_OceanTerrain);
+                    }
+                    // Random feathering
+                    else if (iX == continent1.west || iX == (continent2.east - 1)) {
+                        if (TerrainBuilder.getRandomNumber(2, "Feather hard edges") == 0) {
+                            TerrainBuilder.setTerrainType(iX, iY, globals.g_OceanTerrain);
+                        }
+                    }
+                    // Finally gutter between hemispheres
+                    if (iX > (continent1.east - 1) && iX < continent2.west) {
+                        iTilesChoppedInGutter = iTilesChoppedInGutter + 1;
+                        TerrainBuilder.setTerrainType(iX, iY, globals.g_OceanTerrain);
+                    }
+                    // Random feathering
+                    else if (iX == (continent1.east - 1) || iX == continent2.west) {
+                        if (TerrainBuilder.getRandomNumber(2, "Feather hard edges") == 0) {
+                            TerrainBuilder.setTerrainType(iX, iY, globals.g_OceanTerrain);
+                        }
+                    }
+                }
+            }
+        }
+        // Keep trying if we just had to chop a LOT of tiles down the gutter (which leads to long, straight lines)
+        console.log("Tiles in Center Gutter:" + iTilesChoppedInGutter);
+        let iMaxTilesToChop = iHeight * (continent2.west - continent1.east) / 2;
+        console.log("Max Tiles to Chop: " + iMaxTilesToChop);
+        if (iTilesChoppedInGutter >= iMaxTilesToChop) {
+            console.log("Fail. Too many tiles lost in center gutter");
+        }
+        else {
+            // Now check that largest continent is big enough
+            AreaBuilder.recalculateAreas();
+            let iAreaID = AreaBuilder.findBiggestArea(false);
+            let iPlotCount = AreaBuilder.getPlotCount(iAreaID);
+            console.log("Plots in Largest Landmass:" + iPlotCount);
+            let iPlotsNeeded = 1;//iWidth * iHeight * iLargestContinentPercent / 100;
+            console.log("Plots Needed:" + iPlotsNeeded);
+            if (iPlotCount >= iPlotsNeeded) {
+                console.log("Useable continent found");
+                bLargeEnoughFound = true;
+            }
+        }
+    }
+}
 console.log("Loaded Desu Map Utilities");
 
 //# sourceMappingURL=file:///base-standard/maps/map-utilities.js.map
