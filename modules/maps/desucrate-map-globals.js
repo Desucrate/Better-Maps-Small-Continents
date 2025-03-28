@@ -38,6 +38,8 @@ export var g_HillFractal = 2;
 // Global continent map parameters
 export var g_PolarWaterRows = 2;
 export var g_OceanWaterColumns = 4;
+export var bm_CentralOceanOffsetMax = 20;
+export var bm_PolarWaterOffsetMax = 8;
 // Tuning Parameters to adjust shape
 export var g_FractalWeight = 0.8;
 export var g_WaterPercent = 20;

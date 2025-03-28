@@ -79,19 +79,36 @@ function generateMap() {
     let iNumPlayers1 = mapInfo.PlayersLandmass1;
     let iNumPlayers2 = mapInfo.PlayersLandmass2;
 
+    // *BM* randomise continent boundary location
+    let centerOceanSizeAdjustment = TerrainBuilder.getRandomNumber(2, "Central Ocean Size Adjustment");
+    console.log("Central Ocean Size Adjustment = " + centerOceanSizeAdjustment);
+
+    let SeamOffsetSizeAdjustment = TerrainBuilder.getRandomNumber(2, "Map Edge Ocean Size Adjustment");
+    console.log("Map Edge Ocean Size Adjustment = " + SeamOffsetSizeAdjustment);
+
+    let centerOceanOffset = TerrainBuilder.getRandomNumber(globals.bm_CentralOceanOffsetMax, "Central Ocean Offset");
+    centerOceanOffset -= globals.bm_CentralOceanOffsetMax / 2;
+    console.log("Central Ocean Offset = " + centerOceanOffset);
+
+    let westContinentPolarOffset = TerrainBuilder.getRandomNumber(globals.bm_PolarWaterOffsetMax, "West Polar Offset")
+    westContinentPolarOffset -= globals.bm_PolarWaterOffsetMax / 2;
+    let eastContinentPolarOffset = TerrainBuilder.getRandomNumber(globals.bm_PolarWaterOffsetMax, "East Polar Offset")
+    eastContinentPolarOffset -= globals.bm_PolarWaterOffsetMax / 2;
+
+
     // Establish continent boundaries
     let westContinent = {
-        west: (2 * globals.g_AvoidSeamOffset),// + globals.g_IslandWidth,
-        east: (iWidth / 2) - globals.g_AvoidSeamOffset,
+        west: (globals.g_AvoidSeamOffset + SeamOffsetSizeAdjustment),// + globals.g_IslandWidth,
+        east: (iWidth / 2) - (centerOceanOffset + globals.g_AvoidSeamOffset + centerOceanSizeAdjustment),
         south: globals.g_PolarWaterRows,
-        north: iHeight - globals.g_PolarWaterRows,
+        north: iHeight - (globals.g_PolarWaterRows + 1),
         continent: 0
     };
     let eastContinent = {
-        west: westContinent.east + (3 * globals.g_AvoidSeamOffset),// + globals.g_IslandWidth,
-        east: iWidth - globals.g_AvoidSeamOffset,
+        west: westContinent.east + (2 * (globals.g_AvoidSeamOffset + centerOceanSizeAdjustment)),// + globals.g_IslandWidth,
+        east: iWidth - (globals.g_AvoidSeamOffset + SeamOffsetSizeAdjustment),
         south: globals.g_PolarWaterRows,
-        north: iHeight - globals.g_PolarWaterRows,
+        north: iHeight - (globals.g_PolarWaterRows + 1),
         continent: 0
     };
     let westContinent2 = {
