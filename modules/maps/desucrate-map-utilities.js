@@ -123,14 +123,30 @@ export function createOrganicLandmasses(iWidth, iHeight, continent1, continent2,
         iFlags = 1; // FRAC_WRAP_X
         iFlags += 2; // FRAC_WRAP_Y
         FractalBuilder.create(globals.g_LandmassFractal, iWidth, iHeight, iFractalGrain, iFlags);
-        let iWaterHeight = FractalBuilder.getHeightFromPercent(globals.g_LandmassFractal, iWaterPercent * 1.25);//fWaterPercentFactor);
+        let iWaterHeight = FractalBuilder.getHeightFromPercent(globals.g_LandmassFractal, iWaterPercent * 1.2);//fWaterPercentFactor);
         console.log("iWaterHeight = " + iWaterHeight);
+        // *BM* log continent boundaries
+        console.log("continent1.west = " + continent1.west);
+        console.log("continent1.east = " + continent1.east);
+        console.log("continent1.north = " + continent1.north);
+        console.log("continent1.south = " + continent1.south);
         console.log("continent2.west = " + continent2.west);
+        console.log("continent2.east = " + continent2.east);
+        console.log("continent2.north = " + continent2.north);
+        console.log("continent2.south = " + continent2.south);
         // Apply the fractal as is
         for (let iY = 0; iY < iHeight; iY++) {
             for (let iX = 0; iX < iWidth; iX++) {
                 let terrain = globals.g_OceanTerrain;
                 let iPlotHeight = FractalBuilder.getHeight(globals.g_LandmassFractal, iX, iY);
+                //let iPlotHeight = betterMapsGetHeightFromCenter(iX, iY, iWaterHeight, globals.g_FractalWeight, 0.2 /* *BM* modify CenterWeight, vanilla is 0.0*/, continent1, continent2);
+                // *BM* reduce plot height between hemispheres
+                /*
+                if (iX > (continent1.east - 1) && iX < continent2.west) {
+                    iPlotHeight = Math.floor(iPlotHeight * 0.25);
+                    TerrainBuilder.setTerrainType(iX, iY, globals.g_OceanTerrain);
+                }
+                */
                 if (iPlotHeight >= iWaterHeight) {
                     terrain = globals.g_FlatTerrain;
                 }
@@ -146,11 +162,21 @@ export function createOrganicLandmasses(iWidth, iHeight, continent1, continent2,
             for (let iX = 0; iX < iWidth; iX++) {
                 if (GameplayMap.getTerrainType(iX, iY) != globals.g_OceanTerrain) {
                     // Top and bottom
-                    if (iY < continent1.south || iY > continent1.north) {
+                    // *BM* gut each continent's top and bottom differently
+                    if (iX <= continent1.east && (iY < continent1.south || iY > continent1.north)) {
+                        TerrainBuilder.setTerrainType(iX, iY, globals.g_OceanTerrain);
+                    }
+                    else if (iX >= continent2.west && (iY < continent2.south || iY > continent2.north)) {
                         TerrainBuilder.setTerrainType(iX, iY, globals.g_OceanTerrain);
                     }
                     // Random feathering
-                    else if (iY == continent1.south || iY == continent1.north) {
+                    // *BM* feather each continent's top and bottom differently
+                    else if (iX <= continent1.east && (iY == continent1.south || iY == continent1.north)) {
+                        if (TerrainBuilder.getRandomNumber(2, "Feather hard edges") == 0) {
+                            TerrainBuilder.setTerrainType(iX, iY, globals.g_OceanTerrain);
+                        }
+                    }
+                    else if (iX >= continent2.west && (iY == continent2.south || iY == continent2.north)) {
                         if (TerrainBuilder.getRandomNumber(2, "Feather hard edges") == 0) {
                             TerrainBuilder.setTerrainType(iX, iY, globals.g_OceanTerrain);
                         }
@@ -192,7 +218,7 @@ export function createOrganicLandmasses(iWidth, iHeight, continent1, continent2,
             let iAreaID = AreaBuilder.findBiggestArea(false);
             let iPlotCount = AreaBuilder.getPlotCount(iAreaID);
             console.log("Plots in Largest Landmass:" + iPlotCount);
-            let iPlotsNeeded = 1;//iWidth * iHeight * iLargestContinentPercent / 100;
+            let iPlotsNeeded = iWidth * iHeight * iLargestContinentPercent / 100;
             console.log("Plots Needed:" + iPlotsNeeded);
             if (iPlotCount >= iPlotsNeeded) {
                 console.log("Useable continent found");
@@ -201,6 +227,20 @@ export function createOrganicLandmasses(iWidth, iHeight, continent1, continent2,
         }
     }
 }
+export function betterMapsGetHeightFromCenter(iX, iY, iWaterHeight, iFractalWeight, iCenterWeight, continent1, continent2) {
+    // Get the value from the fractal
+    let iPlotHeight = FractalBuilder.getHeight(globals.g_LandmassFractal, iX, iY);
+    iPlotHeight *= iFractalWeight;
+    //console.log(" initial iPlotHeight = " + iPlotHeight);
+    // Adjust based on distance from center of the continent
+    let iDistanceFromCenter = utilities.getDistanceFromContinentCenter(iX, iY, continent1.south, continent1.north, continent1.west, continent1.east, continent2.west, continent2.east);
+    let iMaxDistanceFromCenter = utilities.getMaxDistanceFromContinentCenter(iX, continent1.south, continent1.north, continent1.west, continent1.east, continent2.west, continent2.east);
+    let iPercentFromCenter = Math.min(100 * iDistanceFromCenter / iMaxDistanceFromCenter, 100);
+    iPlotHeight += iCenterWeight * Math.pow((iWaterHeight * (100 - iPercentFromCenter) / 100), globals.g_CenterExponent);
+    //console.log(" Adjusted on distance from center of the continent : iPlotHeight = " + iPlotHeight + " / iPercentFromCenter =" + iPercentFromCenter + " / iDistanceFromCenter = " + iDistanceFromCenter);
+    return iPlotHeight;
+}
+
 console.log("Loaded Desu Map Utilities");
 
 //# sourceMappingURL=file:///base-standard/maps/map-utilities.js.map

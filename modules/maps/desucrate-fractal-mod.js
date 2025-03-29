@@ -92,9 +92,11 @@ function generateMap() {
 
     let westContinentPolarOffset = TerrainBuilder.getRandomNumber(globals.bm_PolarWaterOffsetMax, "West Polar Offset")
     westContinentPolarOffset -= globals.bm_PolarWaterOffsetMax / 2;
+    console.log("West Continent Polar Offset = " + westContinentPolarOffset);
+
     let eastContinentPolarOffset = TerrainBuilder.getRandomNumber(globals.bm_PolarWaterOffsetMax, "East Polar Offset")
     eastContinentPolarOffset -= globals.bm_PolarWaterOffsetMax / 2;
-
+    console.log("East Continent Polar Offset = " + eastContinentPolarOffset);
 
     // Establish continent boundaries
     let westContinent = {
@@ -125,7 +127,23 @@ function generateMap() {
         north: iHeight - globals.g_PolarWaterRows,
         continent: 0
     };
+    
 
+    // *BM* offset continents north or south
+    
+    if (westContinentPolarOffset > 0) {
+        westContinent.south += westContinentPolarOffset;
+    }
+    else {
+        westContinent.north += westContinentPolarOffset;
+    }
+    if (eastContinentPolarOffset > 0) {
+        eastContinent.south += eastContinentPolarOffset;
+    }
+    else {
+        eastContinent.north += eastContinentPolarOffset;
+    }
+    
     let startSectors = [];
     let iStartSectorRows = 0;
     let iStartSectorCols = 0;
@@ -139,6 +157,7 @@ function generateMap() {
     let bIsBalanced = (startPosition == startPositionHash);
 
     // *BM* vanilla functions, uses Start Position setting to generate a Balanced or Standard map
+
     // *BM* Balanced Map:
 
     if (bIsBalanced) {
